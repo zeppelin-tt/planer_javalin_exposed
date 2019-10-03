@@ -72,23 +72,21 @@ class CommandSocketHandler {
     private fun runAndCallback(command: Command) = when (CmdName.valueOf(command.cmd)) {
         CmdName.GET_ALL -> noteRepository.getOrderedAll()
         CmdName.CREATE ->
-            if (isValidToCreate(command)) noteRepository.create(command.note!!)
-            else Command().addError(ErrorCode.BAD_REQUEST)
+            if (isValidToCreate(command)) noteRepository.create(command.note!!) else sendBadRequestError()
         CmdName.UPDATE ->
-            if (isValidToUpdate(command)) noteRepository.update(command.note!!)
-            else Command().addError(ErrorCode.BAD_REQUEST)
+            if (isValidToUpdate(command)) noteRepository.update(command.note!!) else sendBadRequestError()
         CmdName.TOGGLE ->
-            if (isValidToToggle(command)) noteRepository.toggle(command.note!!)
-            else Command().addError(ErrorCode.BAD_REQUEST)
+            if (isValidToToggle(command)) noteRepository.toggle(command.note!!) else sendBadRequestError()
         CmdName.DELETE ->
-            if (isValidToDelete(command)) noteRepository.delete(command.id!!)
-            else Command().addError(ErrorCode.BAD_REQUEST)
+            if (isValidToDelete(command)) noteRepository.delete(command.id!!) else sendBadRequestError()
         CmdName.DELETE_ALL -> noteRepository.deleteAll()
         else -> {
             log.warn("Command ${command.cmd} not exist")
-            Command().addError(ErrorCode.BAD_REQUEST)
+            sendBadRequestError()
         }
     }
+
+    private fun sendBadRequestError() = Command().addError(ErrorCode.BAD_REQUEST)
 
     private fun withNoteView(obj: Any) = globalObjectMapper
         .writerWithView(NoteView.ToFront::class.java)
