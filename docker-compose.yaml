@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:11.5-alpine
+    container_name: postgres
+    ports:
+      - "127.0.0.10:5432:5432"
+    volumes:
+      - data-volume:/var/lib/postgresql/data/pgdata
+    environment:
+      PGDATA: /var/lib/postgresql/pgdata
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    restart: always
+  app:
+    image: zeppelin11121987/planer_app
+    container_name: application
+    ports:
+      - 8001:8000
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/planer
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    restart: always
+    depends_on:
+      - db
+volumes:
+  data-volume:
+
